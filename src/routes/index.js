@@ -1,4 +1,5 @@
 import express from "express";
+import routerAutor from "./autorRoutes.js";
 import livroRoutes from "./livroRoutes.js";
 
 const routes = (app) => {
@@ -7,7 +8,8 @@ const routes = (app) => {
     });
 
     app.use(
-        livroRoutes
+        livroRoutes,
+        routerAutor
     );
 }
 

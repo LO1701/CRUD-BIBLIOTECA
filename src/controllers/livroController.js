@@ -2,20 +2,27 @@ import Livro from "../models/Livro.js";
 
 class LivroController {
     static listarLivros = (req, res) => {
-        Livro.find((err, livros) => {
-            res.status(200).json(livros);       
+        Livro.find()
+            .populate('autor')
+            .exec((err, livros) => {
+            if(livros.length === 0)
+                res.status(200).send('Nenhum livro foi cadastrado');
+            else
+                res.status(200).json(livros);  
         });
     } 
 
     static listarLivroId = (req, res) => {
         const id = req.params.id;
 
-        Livro.findById(id, (err, livro) => {
-            if(err)
-                res.status(400).send({msg: `${err.message} - O livro não foi encontrado`});
-            else
-                res.status(200).json(livro);
-        });
+        Livro.findById(id)
+            .populate('autor', 'nome')
+            .exec((err, livro) => {
+                    if(err)
+                        res.status(400).send({msg: `${err.message} - O livro não foi encontrado`});
+                    else
+                        res.status(200).json(livro);
+            });
     }
 
     static cadastroLivros = (req, res) => {
@@ -53,6 +60,17 @@ class LivroController {
                 res.status(400).send({msg: `${err.message} - O livro não foi encontrado`});
             else
                 res.status(200).send('Livro excluído com sucesso');
+        });
+    }
+
+    static listarPorEditora = (req, res) => {
+        const editora = req.query.editora;
+
+        Livro.find({'editora': editora}, {}, (err, livro) => {
+            if(err)
+                res.status(400).send({msg: `${err.message} - O livro não foi encontrado`});
+            else
+                res.status(200).json(livro);
         });
     }
 }
